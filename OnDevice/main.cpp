@@ -2,15 +2,13 @@
 #include <vector>
 #include <cmath>
 
-// Physical constants
-const double m1 = 1.0;    // mass of pendulum 
+const double m1 = 1.0;   
 const double m2 = 1.0;   
-const double l1 = 1.0;    // length of pendulum 
+const double l1 = 1.0;    
 const double l2 = 1.0;    
-const double g  = 9.81;   // gravitational acceleration
-const double dt = 0.005;  // simulation time step
+const double g  = 9.81;  
+const double dt = 0.005;  
 
-//State
 struct Pendulum {
     double theta1, theta2;
     double omega1, omega2;
@@ -18,7 +16,6 @@ struct Pendulum {
 
 Pendulum pendulum = { M_PI , M_PI+M_PI/10, 0.0, 0.0 };
 
-// Trail storage for the second mass
 std::vector<std::pair<double, double>> trail;
 const size_t MAX_TRAIL = 500;
 
@@ -40,7 +37,6 @@ void updatePendulum() {
     double denom1 = (m1 + m2) * l1 - m2 * l1 * cos(delta) * cos(delta);
     double denom2 = (l2 / l1) * denom1;
 
-    // angular accelerations
     double a1 = ( m2 * l1 * pendulum.omega1 * pendulum.omega1 * sin(delta) * cos(delta)
                 + m2 * g * sin(pendulum.theta2) * cos(delta)
                 + m2 * l2 * pendulum.omega2 * pendulum.omega2 * sin(delta)
@@ -51,13 +47,11 @@ void updatePendulum() {
                 - (m1 + m2) * l1 * pendulum.omega1 * pendulum.omega1 * sin(delta)
                 - (m1 + m2) * g * sin(pendulum.theta2) ) / denom2;
 
-    // piecewise integration
     pendulum.omega1 += a1 * dt;
     pendulum.omega2 += a2 * dt;
     pendulum.theta1 += pendulum.omega1 * dt;
     pendulum.theta2 += pendulum.omega2 * dt;
 
-    // record second mass position for trail
     double x2 = l1 * sin(pendulum.theta1) + l2 * sin(pendulum.theta2);
     double y2 = -(l1 * cos(pendulum.theta1) + l2 * cos(pendulum.theta2));
     trail.emplace_back(x2, y2);
@@ -66,7 +60,6 @@ void updatePendulum() {
     }
 }
 
-// Draw the double pendulum rods and masses (as circles)
 void drawPendulum() {
     double x1 = l1 * sin(pendulum.theta1);
     double y1 = -l1 * cos(pendulum.theta1);
@@ -92,7 +85,6 @@ void drawPendulum() {
     drawCircle(x2, y2, radius);
 }
 
-// Draw the trail of the second mass
 void drawTrail() {
     glColor3f(0.0f, 1.0f, 0.0f);
     glBegin(GL_LINE_STRIP);
@@ -102,7 +94,6 @@ void drawTrail() {
     glEnd();
 }
 
-// Display callback
 void display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
@@ -112,14 +103,13 @@ void display() {
     drawPendulum();         
     drawTrail();          
 
-    glutSwapBuffers();      // swap buffers to display
+    glutSwapBuffers();      
 }
 
 void idle() {
     glutPostRedisplay();    
 }
 
-// Window reshape callback
 void reshape(int w, int h) {
     glViewport(0, 0, w, h);
     glMatrixMode(GL_PROJECTION);
@@ -134,7 +124,6 @@ void init() {
     glEnable(GL_DEPTH_TEST);
 }
 
-// Entry point
 typedef void (*funcptr)();
 int main(int argc, char** argv) {
     glutInit(&argc, argv);
